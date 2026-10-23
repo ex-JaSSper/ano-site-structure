@@ -59,6 +59,21 @@ a.im::before{content:"▣ ";color:var(--wire)}
 a.im:hover{text-decoration:underline}
 .hd a.im{display:block;margin-top:4px}
 .wn{margin:3px 0 0 18px;color:var(--open);font-size:12px}
+.info{padding-inline:16px;padding-block:8px;background:var(--accent-soft);border-bottom:1px solid var(--line);font-size:13.5px}
+.info .lk{font-size:13.5px}
+li[data-t]{cursor:pointer}
+li[data-t]:hover{background:var(--soft)}
+li.on,li.on:hover{background:var(--accent-soft);box-shadow:inset 3px 0 0 var(--accent)}
+.stage.focus .card{opacity:.16;transition:opacity .15s}
+.stage.focus .card.src,.stage.focus .card.lit{opacity:1}
+.stage.focus .area{opacity:.45}
+.stage.focus svg .w{opacity:.12}
+.stage.focus svg .w.hi{opacity:1}
+.card.lit{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.card.src{border-color:var(--ink);box-shadow:0 0 0 3px rgba(27,34,48,.12)}
+svg .fxl{fill:none;stroke:var(--accent);stroke-width:2;stroke-dasharray:6 4}
+svg .fxd{fill:var(--accent)}
+li[data-t]:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
 .gh{background:var(--paper);border-top:1px solid var(--line);padding-inline:16px;padding-block:8px}
 .gh summary{cursor:pointer;color:var(--muted);font-weight:600;font-size:12px}
 .gl{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:8px}
@@ -72,6 +87,7 @@ button:focus-visible,.hd:focus-visible{outline:2px solid var(--accent);outline-o
   <div class="key"><span><b>↓</b> блок ведёт на страницу ниже</span><span><b style="color:var(--accent)">→</b> переход в другую ветку (кликабельно)</span><span><b>↗</b> внешний сайт или файл</span><span class="r">● под вопросом</span></div>
   <a id="fold" class="im" target="_blank" rel="noopener" hidden>Папка «Примеры экранов»</a><div class="zoom"><button type="button" id="zo" aria-label="Уменьшить">−</button><button type="button" id="zi" aria-label="Увеличить">+</button><button type="button" id="zf">Вся схема</button></div>
 </div>
+<div class="info" id="info" hidden></div>
 <div class="vp" id="vp"><div class="stage" id="st"><svg id="sv"></svg></div></div>
 <details class="gh"><summary>Не страницы — в схему не входят (9)</summary><div class="gl" id="gl"></div></details>
 
@@ -277,7 +293,8 @@ for(const [id,p] of Object.entries(P)){
     const xs=links+(o.x?`<span class="ex">↗ ${o.x}</span>`:"");
     const im=((IMG[id]||{})[ri+1]||[]).map(([a,u])=>`<a class="im" href="${u}" target="_blank" rel="noopener">${/^https?:/.test(a)?a.replace(/^https?:\/\//,"").slice(0,40):a}</a>`).join("");
     const wn=(WARN[id]||{})[ri+1];
-    return `<li class="${o.k?"k":""} ${o.q?"q":""}"><div class="n"><span class="no">${ri+1}</span>${n}</div>${d?`<div class="d">${d}</div>`:""}${o.k?'<span class="dn">↓</span>':""}${xs?`<div class="xs">${xs}</div>`:""}${im?`<div class="ims">${im}</div>`:""}${wn?`<div class="wn">${wn}</div>`:""}</li>`}).join("");
+    const tg=[...(o.k||[]),...(o.to||[]).filter(v=>typeof v==="string")].join(",");
+    return `<li class="${o.k?"k":""} ${o.q?"q":""}" data-t="${tg}" tabindex="0"><div class="n"><span class="no">${ri+1}</span>${n}</div>${d?`<div class="d">${d}</div>`:""}${o.k?'<span class="dn">↓</span>':""}${xs?`<div class="xs">${xs}</div>`:""}${im?`<div class="ims">${im}</div>`:""}${wn?`<div class="wn">${wn}</div>`:""}</li>`}).join("");
   el.innerHTML=`<div class="hd${p.q?" q":""}" tabindex="0"><div class="t">${p.t}${p.m?`<span class="m">${p.m}</span>`:""}</div><div class="s">${p.s}</div>${p.note?`<div class="nt">${p.note}</div>`:""}${(PIMG[id]||[]).map(([a,u])=>`<a class="im" href="${u}" target="_blank" rel="noopener">${a}</a>`).join("")}</div>${li?`<ul>${li}</ul>`:""}`;
   st.appendChild(el); C[id]=el;
 }
@@ -319,19 +336,51 @@ function bus(par,ch,busY){
 }
 for(const [id,k] of Object.entries(kids)) bus(id,k,(id==='header'||id==='footer')?L1Y-AP-14:pos[id].y+H[id]+GY/2);
 /* interaction */
-function sel(id){document.querySelectorAll(".card.sel").forEach(c=>c.classList.remove("sel"));C[id].classList.add("sel");wires.forEach(w=>w.p.classList.toggle("hi",w.ids.includes(id)))}
 let sc=1;
 function setS(s){sc=Math.max(.3,Math.min(1.5,s));st.style.transform=`scale(${sc})`;st.style.marginRight=(-(1-sc)*W)+"px";st.style.marginBottom=(-(1-sc)*HH)+"px"}
-function go(id){sel(id);vp.scrollTo({left:(pos[id].x)*sc-vp.clientWidth/2+CW*sc/2,top:pos[id].y*sc-60,behavior:"smooth"});const c=C[id];c.classList.remove("flash");void c.offsetWidth;c.classList.add("flash")}
-st.addEventListener("click",e=>{const g=e.target.closest("[data-go]");if(g){go(g.dataset.go);return}const h=e.target.closest(".hd");if(h)sel(h.parentElement.id.slice(2))});
-st.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.classList.contains("hd"))sel(e.target.parentElement.id.slice(2))});
+/* focus mode: блок или страница подсвечивает, куда можно попасть */
+const NS="http://www.w3.org/2000/svg";
+const fx=document.createElementNS(NS,"g"); sv.appendChild(fx);
+const info=document.getElementById("info");
+const name=id=>P[id].t;
+function clearFocus(){st.classList.remove("focus");document.querySelectorAll(".card.lit,.card.src,.card.sel").forEach(c=>c.classList.remove("lit","src","sel","in"));
+  document.querySelectorAll("li.on").forEach(l=>l.classList.remove("on"));wires.forEach(w=>w.p.classList.remove("hi"));fx.innerHTML="";info.hidden=true}
+function line(x1,y1,id,cls){const tx=pos[id].x, ty=pos[id].y+18; let d;
+  if(tx>x1+20) {const mx=x1+Math.max(24,(tx-x1)/2); d=`M${x1},${y1} H${mx} V${ty} H${tx}`}
+  else if(tx+CW<x1-CW-20){const ex=tx+CW, mx=ex+Math.max(24,(x1-CW-ex)/2); d=`M${x1-CW},${y1} H${mx} V${ty} H${ex}`}
+  else {const ox=Math.max(x1,tx+CW)+26; d=`M${x1},${y1} H${ox} V${ty} H${tx+CW}`}
+  const p=document.createElementNS(NS,"path");p.setAttribute("d",d);p.setAttribute("class","fxl "+(cls||""));fx.appendChild(p);
+  const c=document.createElementNS(NS,"circle");const end=d.split(" ").pop();const ex=+end.slice(1);c.setAttribute("cx",ex);c.setAttribute("cy",ty);c.setAttribute("r",4);c.setAttribute("class","fxd "+(cls||""));fx.appendChild(c)}
+function focusRow(li){clearFocus();const card=li.closest(".card"),src=card.id.slice(2);const tg=(li.dataset.t||"").split(",").filter(Boolean);
+  st.classList.add("focus");card.classList.add("src");li.classList.add("on");
+  const y1=pos[src].y+li.offsetTop+li.offsetHeight/2, x1=pos[src].x+CW;
+  tg.forEach(t=>{if(t===src)return;C[t].classList.add("lit");line(x1,y1,t)});
+  const nm=li.querySelector(".n").textContent.replace(/^\d+/,"");
+  info.innerHTML=tg.length?`<b>${name(src)} → ${nm}</b> ведёт на: ${tg.map(t=>`<button type="button" class="lk" data-go="${t}">${name(t)}</button>`).join(", ")}`:`<b>${name(src)} → ${nm}</b>: переходов на другие страницы нет`;info.hidden=false}
+function focusCard(id){clearFocus();st.classList.add("focus");C[id].classList.add("src","sel");
+  const out=new Set(),inc=new Set();
+  C[id].querySelectorAll("li[data-t]").forEach(li=>(li.dataset.t||"").split(",").filter(Boolean).forEach(t=>{if(t!==id){out.add(t);line(pos[id].x+CW,pos[id].y+li.offsetTop+li.offsetHeight/2,t)}}));
+  for(const o in C){if(o===id)continue;C[o].querySelectorAll("li[data-t]").forEach(li=>{if((li.dataset.t||"").split(",").includes(id)){inc.add(o);li.classList.add("on")}})}
+  out.forEach(t=>C[t].classList.add("lit"));inc.forEach(t=>C[t].classList.add("lit","in"));
+  wires.forEach(w=>w.p.classList.toggle("hi",w.ids.includes(id)));
+  info.innerHTML=`<b>${name(id)}</b> · сюда ведут: ${[...inc].map(t=>`<button type="button" class="lk" data-go="${t}">${name(t)}</button>`).join(", ")||"—"} · отсюда: ${[...out].map(t=>`<button type="button" class="lk" data-go="${t}">${name(t)}</button>`).join(", ")||"—"}`;info.hidden=false}
+function go(id){vp.scrollTo({left:(pos[id].x)*sc-vp.clientWidth/2+CW*sc/2,top:pos[id].y*sc-60,behavior:"smooth"});const c=C[id];c.classList.remove("flash");void c.offsetWidth;c.classList.add("flash")}
+let moved=false;
+st.addEventListener("click",e=>{if(moved)return;const g=e.target.closest("[data-go]");if(g){go(g.dataset.go);return}
+  if(e.target.closest("a"))return;
+  const li=e.target.closest("li[data-t]");if(li){focusRow(li);return}
+  const h=e.target.closest(".hd");if(h){focusCard(h.parentElement.id.slice(2));return}
+  clearFocus()});
+info.addEventListener("click",e=>{const g=e.target.closest("[data-go]");if(g)go(g.dataset.go)});
+st.addEventListener("keydown",e=>{if(e.key!=="Enter")return;if(e.target.matches("li[data-t]"))focusRow(e.target);else if(e.target.classList.contains("hd"))focusCard(e.target.parentElement.id.slice(2))});
+addEventListener("keydown",e=>{if(e.key==="Escape")clearFocus()});
 document.getElementById("zi").onclick=()=>setS(sc+.1);
 document.getElementById("zo").onclick=()=>setS(sc-.1);
 const fit=()=>{setS(Math.min(1,vp.clientWidth/W));vp.scrollTo(0,0)};
 document.getElementById("zf").onclick=fit;
 let dr=null;
-vp.addEventListener("pointerdown",e=>{if(e.target.closest("button,.hd"))return;dr={x:e.clientX,y:e.clientY,l:vp.scrollLeft,t:vp.scrollTop};vp.classList.add("drag")});
-addEventListener("pointermove",e=>{if(!dr)return;vp.scrollLeft=dr.l-(e.clientX-dr.x);vp.scrollTop=dr.t-(e.clientY-dr.y)});
+vp.addEventListener("pointerdown",e=>{moved=false;if(e.target.closest("button,.hd"))return;dr={x:e.clientX,y:e.clientY,l:vp.scrollLeft,t:vp.scrollTop};vp.classList.add("drag")});
+addEventListener("pointermove",e=>{if(!dr)return;if(Math.abs(e.clientX-dr.x)+Math.abs(e.clientY-dr.y)>4)moved=true;vp.scrollLeft=dr.l-(e.clientX-dr.x);vp.scrollTop=dr.t-(e.clientY-dr.y)});
 addEventListener("pointerup",()=>{dr=null;vp.classList.remove("drag")});
 document.getElementById("gl").innerHTML=GH.map(([a,b])=>`<div><b>${a}</b> <span>— ${b}</span>${(GHL[a]||[]).map(([l,u])=>` <a class="im" href="${u}" target="_blank" rel="noopener">${/^https?:/.test(l)?l.replace(/^https?:\/\//,""):l}</a>`).join("")}</div>`).join("");
 if(FOLDER.length){const f=document.getElementById("fold"); f.href=FOLDER[0][1]; f.hidden=false}
