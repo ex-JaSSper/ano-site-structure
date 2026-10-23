@@ -79,6 +79,24 @@ button:focus-visible,.hd:focus-visible{outline:2px solid var(--accent);outline-o
 function init(){
 /* rows: [название, {k:[дети по дереву], to:[переходы], x:"внешний", q:под вопросом}] */
 const P={
+ header:{t:"Шапка (Header)",s:"на всех страницах",root:1,note:"бургер-меню с полной картой сайта — вопрос открыт",rows:[
+  ["Логотип","Переход на главную",{to:["home"]}],
+  ["Об организации","Без вложенных пунктов",{k:["about"]}],
+  ["Структура","Выпадающий список: 6 департаментов",{k:["structure"]}],
+  ["Аналитика","Верхний уровень меню",{k:["analytics"]}],
+  ["Новости","",{k:["news"]}],
+  ["Календарь","",{k:["events"]}],
+  ["Поиск","Кнопка или поле поиска",{k:["search"]}],
+  ["Опросы","Динамичный элемент меню: открывает окно со списком активных опросов",{k:["surveys"]}],
+  ["Выбор роли","Гражданину / Государству / Бизнесу — подстраивает контент. Логика уточняется на этапе разработки",{q:1}]]},
+ footer:{t:"Подвал (Footer)",s:"на всех страницах · меню не дублирует",root:1,rows:[
+  ["Идентификация организации","Логотип, © 2017–2026 АНО «Цифровая экономика», ИНН 7731384732, ОКВЭД 73.20.1, код ИТ-деятельности 8.01, Устав",{x:"Устав, PDF"}],
+  ["Социальные сети","ВКонтакте, Telegram, Max — до пяти площадок",{x:"соцсети"}],
+  ["Стать учредителем","Форматы участия — внутри этой страницы",{k:["founder"]}],
+  ["Обратная связь","Единая форма; «Предложить проект» — тип обращения",{k:["feedback"]}],
+  ["Контакты","Фактический и юридический адрес, телефон +7 (495) 587-04-77, office@, pr@, hr@data-economy.ru"],
+  ["Политика обработки ПДн","Сквозная ссылка",{k:["policy"]}],
+  ["Кнопка «Брендбук и логотипы»","Акцентная кнопка",{k:["brandbook"]}]]},
  home:{t:"Главная",s:"Раздел 1",root:1,rows:[
   ["Опрос «горячей линии»","Название опроса и переход на его страницу",{to:["survey"]}],
   ["Об организации","Заголовок, описание организации, фоновое изображение, кнопка «Диаграмма направлений»",{to:["direction"]}],
@@ -269,7 +287,7 @@ const width=id=>{const k=kids[id]||[]; return k.length?Math.max(CW,k.reduce((a,c
 const pos={};
 function place(id,x,y){const w=width(id); pos[id]={x:x+(w-CW)/2,y}; let cx=x; for(const c of (kids[id]||[])){place(c,cx,y+H[id]+GY); cx+=width(c)+GX}}
 const groupW=ids=>ids.reduce((a,c)=>a+width(c),0)+GX*(ids.length-1);
-const L1Y=H.home+40+GY+AP;
+const ROW0=Math.max(H.home,H.header,H.footer); const L1Y=24+ROW0+GY+AP+10;
 const hw=groupW(HEADER), fw=groupW(FOOTER), lw=LOOSE.length*CW+GX*(LOOSE.length-1);
 const AG=60; let x=40+AP;
 const areas=[];
@@ -277,7 +295,9 @@ function lay(ids,label){const x0=x; for(const id of ids){place(id,x,L1Y); x+=wid
 lay(HEADER,"Меню в шапке"); lay(FOOTER,"Ссылки в подвале");
 const fA=areas[1]; const looseX=fA[1];
 const totalW=fA[2]+40;
-pos.home={x:(40+areas[1][2])/2-CW/2,y:24};
+pos.home={x:40,y:24};
+pos.header={x:Math.max(40+CW+60,(areas[0][1]+areas[0][2])/2-CW/2),y:24};
+pos.footer={x:(areas[1][1]+areas[1][2])/2-CW/2,y:24};
 let maxY=0;
 for(const id in pos){C[id].style.left=pos[id].x+"px";C[id].style.top=pos[id].y+"px";maxY=Math.max(maxY,pos[id].y+H[id])}
 const subBottom=id=>Math.max(pos[id].y+H[id],...(kids[id]||[]).map(subBottom));
@@ -297,8 +317,7 @@ function bus(par,ch,busY){
   const p=document.createElementNS("http://www.w3.org/2000/svg","path"); p.setAttribute("d",d); p.setAttribute("class","w"); sv.appendChild(p);
   wires.push({p,ids:[par,...ch]});
 }
-bus("home",[...HEADER,...FOOTER],L1Y-AP-14);
-for(const [id,k] of Object.entries(kids)) bus(id,k,pos[id].y+H[id]+GY/2);
+for(const [id,k] of Object.entries(kids)) bus(id,k,(id==='header'||id==='footer')?L1Y-AP-14:pos[id].y+H[id]+GY/2);
 /* interaction */
 function sel(id){document.querySelectorAll(".card.sel").forEach(c=>c.classList.remove("sel"));C[id].classList.add("sel");wires.forEach(w=>w.p.classList.toggle("hi",w.ids.includes(id)))}
 let sc=1;
@@ -316,7 +335,7 @@ addEventListener("pointermove",e=>{if(!dr)return;vp.scrollLeft=dr.l-(e.clientX-d
 addEventListener("pointerup",()=>{dr=null;vp.classList.remove("drag")});
 document.getElementById("gl").innerHTML=GH.map(([a,b])=>`<div><b>${a}</b> <span>— ${b}</span>${(GHL[a]||[]).map(([l,u])=>` <a class="im" href="${u}" target="_blank" rel="noopener">${/^https?:/.test(l)?l.replace(/^https?:\/\//,""):l}</a>`).join("")}</div>`).join("");
 if(FOLDER.length){const f=document.getElementById("fold"); f.href=FOLDER[0][1]; f.hidden=false}
-setS(0.9); requestAnimationFrame(()=>vp.scrollTo({left:pos.home.x*sc-vp.clientWidth/2+CW*sc/2,top:0}));
+setS(0.9); requestAnimationFrame(()=>vp.scrollTo({left:0,top:0}));
 }
 (document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(init,init);
 </script>
