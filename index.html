@@ -1,0 +1,322 @@
+<title>Карта сайта АНО ЦЭ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: карта сайта в нотации Гарретта — дерево сверху вниз, ортогональные шины, группы пунктиром, связи между ветками — ссылками в блоках */
+:root{
+  color-scheme:light;
+  --bg:#f7f8fa; --paper:#ffffff; --ink:#1b2230; --muted:#6b7385; --line:#cfd5df; --wire:#8b95a8;
+  --accent:#2453c9; --accent-soft:#e8eefc; --open:#c2372d; --area:#eef1f6; --soft:#eef0f4;
+  --f:"Golos Text",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f);font-size:14px;line-height:1.35;display:flex;flex-direction:column}
+.bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 20px;padding-inline:16px;padding-block:10px;background:var(--paper);border-bottom:1px solid var(--line)}
+h1{font-size:15px;font-weight:700;margin:0}
+.key{display:flex;flex-wrap:wrap;gap:4px 14px;color:var(--muted);font-size:12px;flex:1 1 300px;min-width:0}
+.key b{color:var(--ink);font-weight:600}
+.key .r{color:var(--open)}
+.zoom{display:flex;gap:4px}
+.zoom button{font:500 12px var(--f);height:26px;min-width:28px;padding:0 8px;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:4px;cursor:pointer}
+.vp{flex:1;min-height:420px;overflow:auto;cursor:grab;background:var(--bg)}
+.vp.drag{cursor:grabbing}
+.stage{position:relative;transform-origin:0 0}
+svg{position:absolute;left:0;top:0;pointer-events:none;overflow:visible}
+svg .w{fill:none;stroke:var(--wire);stroke-width:1.2}
+svg .w.hi{stroke:var(--accent);stroke-width:2}
+.area{position:absolute;border:1px dashed var(--wire);border-radius:10px;background:var(--area)}
+.area span{position:absolute;top:-10px;left:14px;background:var(--bg);padding:0 6px;color:var(--muted);font-weight:600;font-size:13px;letter-spacing:.04em;text-transform:uppercase}
+.card{position:absolute;width:290px;background:var(--paper);border:1px solid var(--line);border-radius:5px}
+.card.root{border:1.5px solid var(--ink)}
+.card.sel{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.card.flash{animation:fl 1.3s ease}
+@keyframes fl{0%,60%{box-shadow:0 0 0 6px var(--accent-soft);border-color:var(--accent)}}
+.hd{padding:10px 12px 8px;border-bottom:1px solid var(--line);cursor:pointer}
+.t{font-weight:700;font-size:16px;display:flex;gap:5px;align-items:baseline}
+.t .m{font-weight:500;color:var(--muted);font-size:13px}
+.s{color:var(--muted);font-size:12.5px;margin-top:2px}
+.hd.q .t::after{content:"●";color:var(--open);font-size:9px;margin-left:auto}
+.nt{color:var(--open);font-size:12.5px;margin-top:4px}
+ul{list-style:none;margin:0;padding:4px 0 6px}
+li{padding:6px 12px;position:relative;border-top:1px solid var(--soft)}
+li:first-child{border-top:0}
+.no{display:inline-block;min-width:18px;color:var(--muted);font-size:12px;font-weight:500;font-variant-numeric:tabular-nums}
+li .d{color:var(--muted);font-size:12.5px;margin:2px 0 0 18px}
+li .xs{margin-left:18px}
+li .n{padding-right:14px;font-weight:600}
+li .xs{display:flex;flex-wrap:wrap;gap:0 8px}
+li.q .n::after{content:" ●";color:var(--open);font-size:10px}
+li .dn{position:absolute;right:10px;top:6px;color:var(--wire);font-weight:700}
+li.k .n{font-weight:600}
+.lk{display:inline;color:var(--accent);cursor:pointer;background:none;border:0;padding:0;font:500 12.5px var(--f);white-space:nowrap}
+.lk:hover{text-decoration:underline}
+.ex{color:var(--muted);font-size:12.5px;white-space:nowrap}
+.ims{margin:4px 0 0 18px;display:flex;flex-direction:column;gap:2px}
+a.im{color:var(--accent);font-size:12.5px;text-decoration:none;display:inline-block}
+a.im::before{content:"▣ ";color:var(--wire)}
+a.im:hover{text-decoration:underline}
+.hd a.im{display:block;margin-top:4px}
+.wn{margin:3px 0 0 18px;color:var(--open);font-size:12px}
+.gh{background:var(--paper);border-top:1px solid var(--line);padding-inline:16px;padding-block:8px}
+.gh summary{cursor:pointer;color:var(--muted);font-weight:600;font-size:12px}
+.gl{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:8px}
+.gl div{font-size:12px} .gl b{text-decoration:line-through;text-decoration-color:var(--wire)} .gl span{color:var(--muted)}
+button:focus-visible,.hd:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){.card.flash{animation:none}}
+</style>
+
+<div class="bar">
+  <h1>Карта сайта АНО «Цифровая экономика»</h1>
+  <div class="key"><span><b>↓</b> блок ведёт на страницу ниже</span><span><b style="color:var(--accent)">→</b> переход в другую ветку (кликабельно)</span><span><b>↗</b> внешний сайт или файл</span><span class="r">● под вопросом</span></div>
+  <a id="fold" class="im" target="_blank" rel="noopener" hidden>Папка «Примеры экранов»</a><div class="zoom"><button type="button" id="zo" aria-label="Уменьшить">−</button><button type="button" id="zi" aria-label="Увеличить">+</button><button type="button" id="zf">Вся схема</button></div>
+</div>
+<div class="vp" id="vp"><div class="stage" id="st"><svg id="sv"></svg></div></div>
+<details class="gh"><summary>Не страницы — в схему не входят (9)</summary><div class="gl" id="gl"></div></details>
+
+<script>
+function init(){
+/* rows: [название, {k:[дети по дереву], to:[переходы], x:"внешний", q:под вопросом}] */
+const P={
+ home:{t:"Главная",s:"Раздел 1",root:1,rows:[
+  ["Опрос «горячей линии»","Название опроса и переход на его страницу",{to:["survey"]}],
+  ["Об организации","Заголовок, описание организации, фоновое изображение, кнопка «Диаграмма направлений»",{to:["direction"]}],
+  ["Живые трансляции","Название, дата, эфир или запись во встроенном плеере. Три состояния: анонс, эфир, запись. Без трансляции блок скрыт",{to:["event"]}],
+  ["Новости","Изображение, дата, заголовок. Подборку задаёт контент-администратор",{to:["newsItem","news"]}],
+  ["Мероприятия","Изображение, название, дата. Только мероприятия с отметкой «выводить на главной»",{to:["event"]}],
+  ["Направления деятельности","Название направления",{to:["direction"]}],
+  ["Ключевые проекты","Логотип проекта, краткое описание",{to:["project"]}],
+  ["Учредители","Логотип, представитель, дата вступления. Отдельный логотип можно скрыть",{x:"сайт учредителя"}],
+  ["Баннер cookie","Текст, ссылка на Политику ПДн, кнопка «Принять». Показывается при первом посещении",{to:["policy"]}]]},
+ about:{t:"Об организации",s:"Раздел 2",rows:[
+  ["Миссия, цели, задачи","Вводное описание, миссия, цели, задачи, изображение"],
+  ["Описание организации","Заголовок, текст, видеоролик"],
+  ["Учредители","Логотипы и названия в порядке вступления, без даты",{x:"сайт учредителя"}],
+  ["Наблюдательный совет","ФИО, должность, организация. Кнопка «Показать всех»"],
+  ["Генеральный директор","Фото, ФИО, должность, биография"],
+  ["Направления деятельности","Карточка: название, краткое описание, «Подробнее». Кнопка «Диаграмма направлений»",{to:["direction"]}],
+  ["Ключевые этапы и результаты","Шкала по годам: при выборе года — описание события. Ниже показатели: число и пояснение"],
+  ["Дайджесты организации","Обложки дайджестов в слайдере",{to:["research"]}],
+  ["Ключевые документы","Номер, название документа, файл PDF. Отдельной страницы документов нет",{x:"PDF"}]]},
+ structure:{t:"Структура",s:"пункт меню · выпадающий список",note:"полная структура запрошена у заказчика",rows:[
+  ["Департаменты","Коммуникаций · Эффективное регулирование · Организационно-юридический · Аналитики и исследований · Цифровизации · Кадров для цифровой экономики",{k:["department"]}]]},
+ department:{t:"Департамент",m:"×6",s:"Раздел 23",rows:[
+  ["Информация о департаменте","Название, описание, тематическое изображение"],
+  ["Направления деятельности","Направления, в которых работает департамент. По каждому — его активности, полномочия и компетенции",{k:["direction"]}],
+  ["Проекты департамента","",{k:["project"]}],
+  ["Коллегиальные органы","Карточка: название органа, логотипы организаций-участников, «Подробнее»",{k:["organ"]}],
+  ["Результаты департамента","Состав не задан",{q:1}],
+  ["Новости департамента","Новости, привязанные к департаменту",{to:["newsItem"]}],
+  ["Обучение и курсы","Только у департамента кадров для цифровой экономики",{k:["courses"]}]]},
+ direction:{t:"Направление",m:"×9",s:"Раздел 3 · настраиваемый шаблон",rows:[
+  ["Шапка","Название, описание, тематическое изображение"],
+  ["Сводная статистика","Показатели: число и подпись"],
+  ["Организации, участвующие в работе направления","Логотипы организаций"],
+  ["Поднаправления","Перечень поднаправлений"],
+  ["Цели направления","Перечень целей"],
+  ["Результаты деятельности","Перечень результатов"],
+  ["Новости направления","",{to:["newsItem"]}],
+  ["Руководитель направления","ФИО, должность"],
+  ["Проекты","",{to:["project"]}],
+  ["Проектный офис",""],
+  ["Общие сведения о высокотехнологичных направлениях","Дорожные карты: описание, курирующий ФОИВ, компании-лидеры"],
+  ["Ключевые документы","Перечень документов",{x:"PDF"}],
+  ["Форма обратной связи","Единая форма, встроенная блоком",{to:["feedback"]}],
+  ["Экспертный совет","",{to:["organ"]}],
+  ["Плановые показатели",""],
+  ["Направления работы",""]]},
+ project:{t:"Проект",m:"×15",s:"Раздел 4",note:"общей страницы со всеми проектами нет",rows:[
+  ["Хлебные крошки","Главная / название проекта"],
+  ["Шапка проекта","Название, тематическое изображение"],
+  ["Прогресс-бар","Этапы реализации, текущий этап выделен"],
+  ["Боковая навигация","Переходы к блокам этой же страницы"],
+  ["Организация","Организации, реализующие проект"],
+  ["Партнёры","Логотипы и названия партнёров"],
+  ["Основная информация","Короткая плашка и описание проекта"],
+  ["Цели и задачи","Перечень целей и задач"],
+  ["Участники","Логотипы организаций-участников"],
+  ["Тематические разделы","Иконки и названия разделов"],
+  ["Команда","Фото, ФИО, должность"],
+  ["Мероприятия","",{to:["event"]}],
+  ["Исследования","Карточки как в «Аналитике»",{to:["research"]}],
+  ["Новости","",{to:["newsItem"]}]]},
+ organ:{t:"Коллегиальный орган",s:"Раздел 5",q:1,note:"перечень органов не утверждён",rows:[
+  ["Хлебные крошки","Главная / название органа"],
+  ["Шапка","Название, тематическое изображение"],
+  ["Задачи","Перечень задач органа"],
+  ["Участники","Руководитель и члены: фото, ФИО, должность. Состав связан со справочником персоналий"],
+  ["Новости","",{to:["newsItem"]}],
+  ["Документы","Положение, приказы о составе",{x:"PDF"}],
+  ["Центр компетенций","Организация — центр компетенций и её функции"]]},
+ courses:{t:"Обучение и курсы",s:"Раздел 18 · внутри департамента кадров",rows:[
+  ["Шапка раздела","Заголовок, описание"],
+  ["Фильтр по аудитории","Школьники, студенты, педагоги, специалисты…"],
+  ["Фильтры","Тип проекта, стоимость, формат"],
+  ["Фильтр по организатору","Плитки с логотипами компаний и числом программ"],
+  ["Карточка программы","Название, логотип организатора, описание, метки: стоимость, формат, уровень",{x:"сайт организатора"}]]},
+ analytics:{t:"Аналитика",s:"Раздел 7 · все исследования",rows:[
+  ["Хлебные крошки, шапка","Заголовок, описание раздела"],
+  ["Поиск по материалам","Обязателен — комментарий заказчика"],
+  ["Фильтр по типу документа","Белая книга, дайджест, рейтинг"],
+  ["Фильтр по теме","Искусственный интеллект, ИТ-кадры, медицина…"],
+  ["Фильтр по году",""],
+  ["Облако тегов","Переход к материалам по тегу"],
+  ["Карточка материала","Обложка, заголовок, краткое описание, «Подробнее»",{k:["research"]}],
+  ["Пагинация",""]]},
+ research:{t:"Исследование",m:"≈86",s:"Раздел 9 · здесь результаты исследования",rows:[
+  ["Заголовок","Дата публикации, тип документа, тема, теги"],
+  ["Текст материала","Собирается из типовых блоков"],
+  ["Блок цитаты","Текст цитаты, фото, ФИО, должность"],
+  ["Дашборд DataLens","Встроенные показатели исследования. На мобильных не выводится"],
+  ["Отметка «Построено в DataLens»","Служебная, платформа её не убирает"],
+  ["Кнопка «Скачать в PDF»","Отчёт готовит контент-администратор; кнопку можно отключить",{x:"PDF"}],
+  ["Закрытый отчёт","Превью на 2–3 страницы и запрос полной версии через форму",{to:["feedback"]}]]},
+ news:{t:"Новости",s:"Раздел 6",rows:[
+  ["Поиск",""],
+  ["Фильтры","Тема, департамент, период, проект"],
+  ["Кнопка «Новости учредителей»",""],
+  ["Лента новостей","Сетка в четыре столбца"],
+  ["Карточка новости","Изображение, заголовок, дата",{k:["newsItem"]}]]},
+ newsItem:{t:"Новость",s:"Раздел 6.1",rows:[
+  ["Заголовок, дата, обложка",""],
+  ["Текст материала","Из типовых блоков"],
+  ["Блок цитаты","Текст, фото, ФИО, должность"],
+  ["Видео","Если есть"],
+  ["Галерея изображений","Карусель фотографий"],
+  ["Другие новости","Дата, миниатюра, заголовок",{to:["newsItem"]}],
+  ["Кнопка «К новостям»","",{to:["news"]}],
+  ["Перечень новостей по хронологии","Не ясно, чем отличается от «Других новостей»",{q:1}]]},
+ events:{t:"Календарь",s:"Раздел 16 · мероприятия",rows:[
+  ["Вид «сетка по датам»",""],
+  ["Вид «карточки»",""],
+  ["Карточка мероприятия","Изображение, название, дата",{k:["event"],x:"сайт организатора"}],
+  ["Сортировка","Сначала предстоящие / прошедшие"],
+  ["Фильтр по периодам","Месяц, квартал, год, интервал"],
+  ["Форма «Заявка на мероприятие»","Публикуется после модерации"],
+  ["Экспорт в ICS","",{x:"файл"}]]},
+ event:{t:"Мероприятие",s:"Раздел 17 · анонс и итог",rows:[
+  ["Название, даты","Период «с — по»"],
+  ["Место проведения","Адрес для очных. Кнопка «скопировать ссылку»"],
+  ["Описание, изображение",""],
+  ["Регистрация","Ссылка на электронную регистрацию",{x:"форма регистрации"}],
+  ["Переход анонс ↔ итог","",{to:["event"]}],
+  ["Итог","Текст, фото, видео, презентации"],
+  ["Трансляция","",{x:"видеоплатформа"}]]},
+ search:{t:"Результаты поиска",s:"Раздел 12",rows:[
+  ["Строка запроса","Прямой поиск без подсказок"],
+  ["Результаты","Новости, аналитика, мероприятия, разделы",{to:["newsItem","research","event"]}],
+  ["Фильтры","Дата, год, раздел, тег, департамент"]]},
+ surveys:{t:"Опросы",s:"модальное окно из шапки",rows:[
+  ["Список активных опросов","Опросы конечные: по окончании скрываются",{k:["survey"]}]]},
+ survey:{t:"Опрос",s:"Раздел 11 · у каждого свой адрес",rows:[
+  ["Категория обращения",""],
+  ["Вопросы","Один вариант, несколько вариантов, свободный ответ"],
+  ["Персональные данные","ФИО, телефон, почта"],
+  ["Согласие на обработку ПДн","Со ссылкой на Политику",{to:["policy"]}],
+  ["Защита","Капча, ограничение частоты"]]},
+ founder:{t:"Стать учредителем",s:"Раздел 8",rows:[
+  ["Краткие сведения об организации","О деятельности и составе"],
+  ["Ключевая выгода статуса","Участие в площадке взаимодействия бизнеса и государства"],
+  ["Результаты работы","Достижения организации"],
+  ["Логотипы учредителей","",{x:"сайт учредителя"}],
+  ["Форматы участия","Способы участия и куда идти по каждому. Перечень ждём от заказчика",{q:1}],
+  ["Переход к коллегиальным органам","",{to:["organ"]}],
+  ["Документы для вступления","Перечень документов"],
+  ["Отзывы или кейсы учредителей",""],
+  ["Призыв к действию","Ведёт к контактам. Онлайн-заявки нет",{k:["contacts"]}]]},
+ contacts:{t:"Контакты",s:"Раздел 24",q:1,note:"предложение Атвинты, не подтверждено",rows:[]},
+ feedback:{t:"Обратная связь",s:"Раздел 15 · единая форма",rows:[
+  ["Тип обращения","В том числе «Предложить проект»"],
+  ["Поля обращения","Состав не зафиксирован",{q:1}],
+  ["Согласие на обработку ПДн","",{to:["policy"]}],
+  ["Защита","Капча, ограничение частоты"]]},
+ policy:{t:"Политика ПДн",s:"Раздел 14",rows:[["Текст политики","Предоставляет заказчик"]]},
+ brandbook:{t:"Брендбук и логотипы",s:"Раздел 13",rows:[["ZIP-архив","Брендбук и логотипы для скачивания",{x:"архив"}]]},
+ dashboard:{t:"Витрина данных опросов",s:"Раздел 10",q:1,note:"сюда ничего не ведёт; доступ — решает заказчик",rows:[
+  ["Дашборд DataLens","Распределение ответов, динамика. Только агрегированные данные"]]},
+ e404:{t:"Ошибка 404",s:"Раздел 22",rows:[
+  ["Сообщение об ошибке","Без технических подробностей"],
+  ["Переходы к разделам","",{to:["home","analytics","news"]}]]}
+};
+const IMG={"direction": {"1": [["Шапка направления.png", "https://drive.google.com/file/d/1Y-o7LaxvppvZkxAhY5rFVPcBDUPWutWJ/view?usp=drive_link"]], "2": [["Статистика направления.png", "https://drive.google.com/file/d/1pEEUzr6Y01s3OvU7y5tTJrbsnJpbBhgY/view?usp=drive_link"]], "3": [["Организации участвующие в работе направления.png", "https://drive.google.com/file/d/1xrePf3gfLCiXEtioCyxNo9HB5kYc5LHE/view?usp=drive_link"]], "4": [["Поднаправления.png", "https://drive.google.com/file/d/1JB1M_vUdhdCNXkxiy0EkJbMPrs4UE3EW/view?usp=drive_link"]], "5": [["Цели направления.png", "https://drive.google.com/file/d/1BCsb4lVH8qslCL9NxK33_RmfscH-ceGd/view?usp=drive_link"]], "6": [["Результат деятельности.png", "https://drive.google.com/file/d/1rBvYGvLC3jL_WHZvoFm81K9LZ-KhtrCT/view?usp=drive_link"]], "7": [["Новости направления.png", "https://drive.google.com/file/d/1mWF42Xcsge8rSWii8zLsuuGfEThECQxf/view?usp=drive_link"]], "8": [["Руководитель направления.png", "https://drive.google.com/file/d/1FnSt0vd4ETZY220h6CTQDmdkEm_Z_fcI/view?usp=drive_link"]], "9": [["Проекты.png", "https://drive.google.com/file/d/1021qfC6fnLWqDRqwNzI2BUVsIojSq_3Z/view?usp=drive_link"]], "10": [["Проектный офис.png", "https://drive.google.com/file/d/1l-dibfCl1KfIfstjNyEat3CoyU3m44sA/view?usp=drive_link"]], "11": [["Общие сведения о высоко технологичных направлениях.png", "https://drive.google.com/file/d/1ep7bz5joOgC9HdZKPZUVPIJoskU8838B/view?usp=drive_link"]], "12": [["Основные документы.png", "https://drive.google.com/file/d/1R7G8Hybiu9b99sONDMiQ6pAQj-eKMlrO/view?usp=drive_link"]], "13": [["Форма обратной связи.png", "https://drive.google.com/file/d/1yPeSjiA6XNnV6wy_U6qzmDTl1htF_Ara/view?usp=drive_link"]], "14": [["Экспертный совет.png", "https://drive.google.com/file/d/1BnetTu7KW7u-eQDR7U_QEJkN8b7jKmwU/view?usp=drive_link"]], "15": [["Плановые показатели.png", "https://drive.google.com/file/d/1ISN3d38Hc6gnkbeXZUDuh5jYhXu3_R2V/view?usp=drive_link"]], "16": [["Направления работы.png", "https://drive.google.com/file/d/1r0pLfxDGeQlQAkJFxJngIlhpRHpGjoBf/view?usp=drive_link"]]}, "project": {"5": [["4 Проект — 05 Организация.png", "https://drive.google.com/file/d/1JXxkCxv8Wtq1ZCsuOHl4xpzFf7-gyHHj/view?usp=drive_link"]], "6": [["4 Проект — 13 Исследования.png", "https://drive.google.com/file/d/1_h2eoOXA9LMcfYL5591fxxpFFrtvv9Ft/view?usp=drive_link"]], "7": [["4 Проект — 07 Основная информация.png", "https://drive.google.com/file/d/1c-aEljIByJSuEnaFcYwSFvE_XSop6hAK/view?usp=drive_link"]], "8": [["4 Проект — 08 Цели и задачи.png", "https://drive.google.com/file/d/1yNLAIeexKtMtqrXqdCgz_-OU3u9ym6oA/view?usp=drive_link"]], "9": [["4 Проект — 09 Участники.png", "https://drive.google.com/file/d/13ZKIKQ3mbbmI57UqWq-oO4nMTz_GpO49/view?usp=drive_link"]], "10": [["4 Проект — 10 Основные разделы.png", "https://drive.google.com/file/d/17mBnQGkoamscH3aFmh859tp88CegvuUL/view?usp=drive_link"]], "11": [["4 Проект — 11 Команда.png", "https://drive.google.com/file/d/1gqfimHbRqOZRuYmEj3MOZMnub3Piq-l1/view?usp=drive_link"]], "13": [["4 Проект — 13 Исследования.png", "https://drive.google.com/file/d/1_h2eoOXA9LMcfYL5591fxxpFFrtvv9Ft/view?usp=drive_link"]]}, "organ": {"2": [["https://drive.google.com/file/d/16mQzjkJYIaxWZSkUvZxOFDWNjA2fPtdv/view?usp=drive_link", "https://drive.google.com/file/d/16mQzjkJYIaxWZSkUvZxOFDWNjA2fPtdv/view?usp=drive_link"]], "3": [["Задачи.png", "https://drive.google.com/file/d/16gy-uiG_ZgnztrkcAPWSmtyJ-7aP6Gu1/view?usp=drive_link"]], "4": [["Участники.png", "https://drive.google.com/file/d/1yOm1eS5ieOhQVBmYkiw3GWG8RsTWayql/view?usp=drive_link"]], "7": [["Участники.png", "https://drive.google.com/file/d/1yOm1eS5ieOhQVBmYkiw3GWG8RsTWayql/view?usp=drive_link"]]}, "newsItem": {"5": [["6.1 Новость — 07 Галерея изображений.png", "https://drive.google.com/file/d/1LSJyWla5ye3PNmqdmVXvpPF-MuQK0tci/view?usp=drive_link"], ["https://d-economy.ru/news/ano-cje-podvela-itogi-dejatelnosti-rabochej-gruppy-iskusstvennyj-intellekt-za-2024-god/", "https://d-economy.ru/news/ano-cje-podvela-itogi-dejatelnosti-rabochej-gruppy-iskusstvennyj-intellekt-za-2024-god/"]]}, "department": {"2": [["https://d-economy.ru", "https://d-economy.ru"]]}};
+const WARN={"project": {"6": "ссылка ведёт на скриншот «13 Исследования» — нужен «06 Партнёры»"}, "organ": {"7": "ссылка ведёт на «Участники.png» — нужен скриншот центра компетенций"}};
+const PIMG={"organ": [["Выпадающий список коллегиальных органов.png", "https://drive.google.com/file/d/1SRx90TxK9rtCEkWA9Ih8EMsc63EAQBzT/view?usp=drive_link"]]};
+const FOLDER=[["АНО ЦЭ — Примеры экранов", "https://drive.google.com/drive/folders/1uyuWOI1qxTgPQOcF42on76jbbEvAHNEk"]];
+const GHL={"Эксперты": [["https://d-economy.ru/expert/", "https://d-economy.ru/expert/"]], "Структура и персоналии": [["19-20 Аналоги карточек — Карточка учредителя — блок Учредители.png", "https://drive.google.com/file/d/1HklpXqVALVJ3fodNIBFarPSoPwFFSleP/view?usp=drive_link"]], "Учредители": [["19-20 Аналоги карточек — Карточка учредителя — блок Учредители.png", "https://drive.google.com/file/d/1HklpXqVALVJ3fodNIBFarPSoPwFFSleP/view?usp=drive_link"]], "Госорганы-партнёры": [["d-economy.ru/stream/monitoring/", "http://d-economy.ru/stream/monitoring/"]]};
+const HEADER=["about","structure","analytics","news","events","search","surveys"];
+const FOOTER=["founder","feedback","policy","brandbook"];
+const LOOSE=["dashboard","e404"];
+const GH=[["Структура и персоналии","справочник людей"],["Учредители","блок, не страница"],["Эксперты","это Экспертный совет"],["Госорганы-партнёры","не закладываются"],["Документы","блок"],["Рабочие группы","отказ заказчика"],["Список проектов","не делаем"],["Форматы участия","блок на «Стать учредителем»"],["Предложить проект","тип в форме"]];
+
+const st=document.getElementById("st"), sv=document.getElementById("sv"), vp=document.getElementById("vp");
+const C={}, kids={};
+for(const [id,p] of Object.entries(P)){
+  const el=document.createElement("div"); el.className="card"+(p.root?" root":""); el.id="c-"+id;
+  const li=p.rows.map(([n,d,o={}],ri)=>{
+    (o.k||[]).forEach(k=>(kids[id]=kids[id]||[]).push(k));
+    const links=(o.to||[]).map(t=>`<button type="button" class="lk" data-go="${t}">→ ${P[t].t}</button>`).join(" ");
+    const xs=links+(o.x?`<span class="ex">↗ ${o.x}</span>`:"");
+    const im=((IMG[id]||{})[ri+1]||[]).map(([a,u])=>`<a class="im" href="${u}" target="_blank" rel="noopener">${/^https?:/.test(a)?a.replace(/^https?:\/\//,"").slice(0,40):a}</a>`).join("");
+    const wn=(WARN[id]||{})[ri+1];
+    return `<li class="${o.k?"k":""} ${o.q?"q":""}"><div class="n"><span class="no">${ri+1}</span>${n}</div>${d?`<div class="d">${d}</div>`:""}${o.k?'<span class="dn">↓</span>':""}${xs?`<div class="xs">${xs}</div>`:""}${im?`<div class="ims">${im}</div>`:""}${wn?`<div class="wn">${wn}</div>`:""}</li>`}).join("");
+  el.innerHTML=`<div class="hd${p.q?" q":""}" tabindex="0"><div class="t">${p.t}${p.m?`<span class="m">${p.m}</span>`:""}</div><div class="s">${p.s}</div>${p.note?`<div class="nt">${p.note}</div>`:""}${(PIMG[id]||[]).map(([a,u])=>`<a class="im" href="${u}" target="_blank" rel="noopener">${a}</a>`).join("")}</div>${li?`<ul>${li}</ul>`:""}`;
+  st.appendChild(el); C[id]=el;
+}
+const CW=290, GX=28, GY=56, AP=22; /* card width, gaps, area padding */
+const H={}; for(const id in C) H[id]=C[id].offsetHeight;
+const width=id=>{const k=kids[id]||[]; return k.length?Math.max(CW,k.reduce((a,c)=>a+width(c),0)+GX*(k.length-1)):CW};
+const pos={};
+function place(id,x,y){const w=width(id); pos[id]={x:x+(w-CW)/2,y}; let cx=x; for(const c of (kids[id]||[])){place(c,cx,y+H[id]+GY); cx+=width(c)+GX}}
+const groupW=ids=>ids.reduce((a,c)=>a+width(c),0)+GX*(ids.length-1);
+const L1Y=H.home+40+GY+AP;
+const hw=groupW(HEADER), fw=groupW(FOOTER), lw=LOOSE.length*CW+GX*(LOOSE.length-1);
+const AG=60; let x=40+AP;
+const areas=[];
+function lay(ids,label){const x0=x; for(const id of ids){place(id,x,L1Y); x+=width(id)+GX} x+=-GX; areas.push([label,x0-AP,x+AP,ids]); x+=AP*2+AG}
+lay(HEADER,"Меню в шапке"); lay(FOOTER,"Ссылки в подвале");
+const fA=areas[1]; const looseX=fA[1];
+const totalW=fA[2]+40;
+pos.home={x:(40+areas[1][2])/2-CW/2,y:24};
+let maxY=0;
+for(const id in pos){C[id].style.left=pos[id].x+"px";C[id].style.top=pos[id].y+"px";maxY=Math.max(maxY,pos[id].y+H[id])}
+const subBottom=id=>Math.max(pos[id].y+H[id],...(kids[id]||[]).map(subBottom));
+{const fb=Math.max(...FOOTER.map(subBottom))+AP+50; LOOSE.forEach((id,i)=>{pos[id]={x:looseX+AP+i*(CW+GX),y:fb}; C[id].style.left=pos[id].x+"px"; C[id].style.top=fb+"px"; maxY=Math.max(maxY,fb+H[id])}); areas.push(["Нет входа из меню",looseX,looseX+lw+AP*2,LOOSE,fb]);}
+areas.forEach(([lab,x0,x1,ids,ty])=>{const a=document.createElement("div");a.className="area";const top=(ty||L1Y)-AP;const bot=Math.max(...ids.map(subBottom))+AP;
+  Object.assign(a.style,{left:x0+"px",top:top+"px",width:(x1-x0)+"px",height:(bot-top)+"px"});a.innerHTML=`<span>${lab}</span>`;st.insertBefore(a,sv)});
+const W=totalW, HH=maxY+60;
+Object.assign(st.style,{width:W+"px",height:HH+"px"}); sv.setAttribute("width",W); sv.setAttribute("height",HH);
+/* orthogonal bus connectors */
+const wires=[];
+function bus(par,ch,busY){
+  const px=pos[par].x+CW/2, py=pos[par].y+H[par];
+  const xs=ch.map(c=>pos[c].x+CW/2);
+  let d=`M${px},${py} V${busY}`;
+  const l=Math.min(px,...xs), r=Math.max(px,...xs); if(r>l) d+=` M${l},${busY} H${r}`;
+  ch.forEach(c=>{d+=` M${pos[c].x+CW/2},${busY} V${pos[c].y}`});
+  const p=document.createElementNS("http://www.w3.org/2000/svg","path"); p.setAttribute("d",d); p.setAttribute("class","w"); sv.appendChild(p);
+  wires.push({p,ids:[par,...ch]});
+}
+bus("home",[...HEADER,...FOOTER],L1Y-AP-14);
+for(const [id,k] of Object.entries(kids)) bus(id,k,pos[id].y+H[id]+GY/2);
+/* interaction */
+function sel(id){document.querySelectorAll(".card.sel").forEach(c=>c.classList.remove("sel"));C[id].classList.add("sel");wires.forEach(w=>w.p.classList.toggle("hi",w.ids.includes(id)))}
+let sc=1;
+function setS(s){sc=Math.max(.3,Math.min(1.5,s));st.style.transform=`scale(${sc})`;st.style.marginRight=(-(1-sc)*W)+"px";st.style.marginBottom=(-(1-sc)*HH)+"px"}
+function go(id){sel(id);vp.scrollTo({left:(pos[id].x)*sc-vp.clientWidth/2+CW*sc/2,top:pos[id].y*sc-60,behavior:"smooth"});const c=C[id];c.classList.remove("flash");void c.offsetWidth;c.classList.add("flash")}
+st.addEventListener("click",e=>{const g=e.target.closest("[data-go]");if(g){go(g.dataset.go);return}const h=e.target.closest(".hd");if(h)sel(h.parentElement.id.slice(2))});
+st.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.classList.contains("hd"))sel(e.target.parentElement.id.slice(2))});
+document.getElementById("zi").onclick=()=>setS(sc+.1);
+document.getElementById("zo").onclick=()=>setS(sc-.1);
+const fit=()=>{setS(Math.min(1,vp.clientWidth/W));vp.scrollTo(0,0)};
+document.getElementById("zf").onclick=fit;
+let dr=null;
+vp.addEventListener("pointerdown",e=>{if(e.target.closest("button,.hd"))return;dr={x:e.clientX,y:e.clientY,l:vp.scrollLeft,t:vp.scrollTop};vp.classList.add("drag")});
+addEventListener("pointermove",e=>{if(!dr)return;vp.scrollLeft=dr.l-(e.clientX-dr.x);vp.scrollTop=dr.t-(e.clientY-dr.y)});
+addEventListener("pointerup",()=>{dr=null;vp.classList.remove("drag")});
+document.getElementById("gl").innerHTML=GH.map(([a,b])=>`<div><b>${a}</b> <span>— ${b}</span>${(GHL[a]||[]).map(([l,u])=>` <a class="im" href="${u}" target="_blank" rel="noopener">${/^https?:/.test(l)?l.replace(/^https?:\/\//,""):l}</a>`).join("")}</div>`).join("");
+if(FOLDER.length){const f=document.getElementById("fold"); f.href=FOLDER[0][1]; f.hidden=false}
+setS(0.9); requestAnimationFrame(()=>vp.scrollTo({left:pos.home.x*sc-vp.clientWidth/2+CW*sc/2,top:0}));
+}
+(document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(init,init);
+</script>
