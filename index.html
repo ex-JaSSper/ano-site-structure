@@ -97,22 +97,22 @@ function init(){
 const P={
  header:{t:"Шапка (Header)",s:"на всех страницах",root:1,note:"бургер-меню с полной картой сайта — вопрос открыт",rows:[
   ["Логотип","Переход на главную",{to:["home"]}],
-  ["Об организации","Без вложенных пунктов",{k:["about"]}],
-  ["Структура","Выпадающий список: 6 департаментов",{k:["structure"]}],
-  ["Аналитика","Верхний уровень меню",{k:["analytics"]}],
-  ["Новости","",{k:["news"]}],
-  ["Календарь","",{k:["events"]}],
-  ["Поиск","Кнопка или поле поиска",{k:["search"]}],
-  ["Опросы","Динамичный элемент меню: открывает окно со списком активных опросов",{k:["surveys"]}],
+  ["Об организации","Без вложенных пунктов",{to:["about"]}],
+  ["Структура","Выпадающий список: 6 департаментов",{to:["structure"]}],
+  ["Аналитика","Верхний уровень меню",{to:["analytics"]}],
+  ["Новости","",{to:["news"]}],
+  ["Календарь","",{to:["events"]}],
+  ["Поиск","Кнопка или поле поиска",{to:["search"]}],
+  ["Опросы","Динамичный элемент меню: открывает окно со списком активных опросов",{to:["surveys"]}],
   ["Выбор роли","Гражданину / Государству / Бизнесу — подстраивает контент. Логика уточняется на этапе разработки",{q:1}]]},
  footer:{t:"Подвал (Footer)",s:"на всех страницах · меню не дублирует",root:1,rows:[
   ["Идентификация организации","Логотип, © 2017–2026 АНО «Цифровая экономика», ИНН 7731384732, ОКВЭД 73.20.1, код ИТ-деятельности 8.01, Устав",{x:"Устав, PDF"}],
   ["Социальные сети","ВКонтакте, Telegram, Max — до пяти площадок",{x:"соцсети"}],
-  ["Стать учредителем","Форматы участия — внутри этой страницы",{k:["founder"]}],
-  ["Обратная связь","Единая форма; «Предложить проект» — тип обращения",{k:["feedback"]}],
+  ["Стать учредителем","Форматы участия — внутри этой страницы",{to:["founder"]}],
+  ["Обратная связь","Единая форма; «Предложить проект» — тип обращения",{to:["feedback"]}],
   ["Контакты","Фактический и юридический адрес, телефон +7 (495) 587-04-77, office@, pr@, hr@data-economy.ru"],
-  ["Политика обработки ПДн","Сквозная ссылка",{k:["policy"]}],
-  ["Кнопка «Брендбук и логотипы»","Акцентная кнопка",{k:["brandbook"]}]]},
+  ["Политика обработки ПДн","Сквозная ссылка",{to:["policy"]}],
+  ["Кнопка «Брендбук и логотипы»","Акцентная кнопка",{to:["brandbook"]}]]},
  home:{t:"Главная",s:"Раздел 1",root:1,rows:[
   ["Опрос «горячей линии»","Название опроса и переход на его страницу",{to:["survey"]}],
   ["Об организации","Заголовок, описание организации, фоновое изображение, кнопка «Диаграмма направлений»",{to:["direction"]}],
@@ -312,9 +312,7 @@ function lay(ids,label){const x0=x; for(const id of ids){place(id,x,L1Y); x+=wid
 lay(HEADER,"Меню в шапке"); lay(FOOTER,"Ссылки в подвале");
 const fA=areas[1]; const looseX=fA[1];
 const totalW=fA[2]+40;
-pos.home={x:40,y:24};
-pos.header={x:Math.max(40+CW+60,(areas[0][1]+areas[0][2])/2-CW/2),y:24};
-pos.footer={x:(areas[1][1]+areas[1][2])/2-CW/2,y:24};
+{const hx=Math.max(40+CW+40,(40+areas[1][2])/2-CW/2); pos.home={x:hx,y:24}; pos.header={x:hx-CW-40,y:24}; pos.footer={x:hx+CW+40,y:24};}
 let maxY=0;
 for(const id in pos){C[id].style.left=pos[id].x+"px";C[id].style.top=pos[id].y+"px";maxY=Math.max(maxY,pos[id].y+H[id])}
 const subBottom=id=>Math.max(pos[id].y+H[id],...(kids[id]||[]).map(subBottom));
@@ -334,7 +332,8 @@ function bus(par,ch,busY){
   const p=document.createElementNS("http://www.w3.org/2000/svg","path"); p.setAttribute("d",d); p.setAttribute("class","w"); sv.appendChild(p);
   wires.push({p,ids:[par,...ch]});
 }
-for(const [id,k] of Object.entries(kids)) bus(id,k,(id==='header'||id==='footer')?L1Y-AP-14:pos[id].y+H[id]+GY/2);
+bus("home",[...HEADER,...FOOTER],L1Y-AP-14);
+for(const [id,k] of Object.entries(kids)) bus(id,k,pos[id].y+H[id]+GY/2);
 /* interaction */
 let sc=1;
 function setS(s){sc=Math.max(.3,Math.min(1.5,s));st.style.transform=`scale(${sc})`;st.style.marginRight=(-(1-sc)*W)+"px";st.style.marginBottom=(-(1-sc)*HH)+"px"}
@@ -384,7 +383,7 @@ addEventListener("pointermove",e=>{if(!dr)return;if(Math.abs(e.clientX-dr.x)+Mat
 addEventListener("pointerup",()=>{dr=null;vp.classList.remove("drag")});
 document.getElementById("gl").innerHTML=GH.map(([a,b])=>`<div><b>${a}</b> <span>— ${b}</span>${(GHL[a]||[]).map(([l,u])=>` <a class="im" href="${u}" target="_blank" rel="noopener">${/^https?:/.test(l)?l.replace(/^https?:\/\//,""):l}</a>`).join("")}</div>`).join("");
 if(FOLDER.length){const f=document.getElementById("fold"); f.href=FOLDER[0][1]; f.hidden=false}
-setS(0.9); requestAnimationFrame(()=>vp.scrollTo({left:0,top:0}));
+setS(0.9); requestAnimationFrame(()=>vp.scrollTo({left:Math.max(0,pos.header.x*sc-40),top:0}));
 }
 (document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(init,init);
 </script>
